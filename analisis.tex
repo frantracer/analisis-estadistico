@@ -2,6 +2,9 @@
 \usepackage{graphicx}
 \usepackage[utf8]{inputenc}
 \usepackage{rotating} 
+\usepackage[spanish]{babel}
+
+\selectlanguage{spanish}
 
 \begin{document}
 
@@ -11,27 +14,52 @@
 \maketitle
 
 \begin{abstract}
-The abstract text goes here.
+El propósito de este documento es realizar un análisis descriptivo sobre las variables del conjunto de datos dado, encontrar posibles relaciones entre las mismas y finalmente realizar uno o varios modelos que puedan predecir los valores de algunas variables. Todo esto con rigor matemático.
 \end{abstract}
+\newpage
+
+\tableofcontents
+\newpage
 
 \section{Introducción}
-Here is the text of your introduction.
+Los datos que se nos presentan para analizar tienen la siguiente estructura:
 
-\include{my_summary}
+\input{tabla_de_datos_de_ejemplo_1}
+\input{tabla_de_datos_de_ejemplo_2}
 
-\includegraphics[width=1.00\textwidth]{correlation_matrix.pdf}
-\clearpage
+En primera instancia se va a realizar un análisis descriptivo de los datos, por lo que todos aquellos que sean no sean cuantitavos, es decir, que sean cualitativos, serán eliminados.
 
+\section{Análisis descriptivo general}
 
-\begin{equation}
-    \label{simple_equation}
-    \alpha = \sqrt{ \beta }
-\end{equation}
+Para realizar el análisis descriptivo se han tenido en cuenta las siguientes medidas:
+\begin{itemize}
+\item \textbf{Media}: Es el valor que dado todo el conjunto de datos mejor aproxima a todos los valores del conjunto.
+\item \textbf{Varianza}: Representa cuánto se alejan de forma general todos los valores de la media del conjunto.
+\item \textbf{Desviación Típica}: Es la raíz cuadrada de la varianza.
+\item \textbf{CV}: Sirve para comparar dos conjuntos de datos de la misma variable, de forma que mientras más cercano a cero sea este valor, el conjunto de datos es menos disperso. 
+\item \textbf{Mínimo}: Es el valor más pequeño de la lista de valores.
+\item \textbf{Percentil-25}: Es el valor tal que el 25\% de los valores del conjunto de datos queda por debajo del mismo.
+\item \textbf{Mediana}: Es el valor tal que el 50\% de los valores del conjunto de datos queda por debajo del mismo.
+\item \textbf{Percentil-75}: Es el valor tal que el 75\% de los valores del conjunto de datos queda por debajo del mismo.
+\item \textbf{Máximo}: Es el valor más grande de la lista de valores. También puede verse como el percentil-100 ya que el 100\% de los valores queda por debajo.
+\item \textbf{Skewness}: Suponiendo que los valores deberían agruparse en torno a la media, indica cómo de lejos se agrupan y en qué lado. Esta medida es cercana a 0 cuando se agrupan en torno a la media, positivo cuando se agrupan en el lado izquierdo (es decir hay más valores menores que la media que mayores) o negativo cuando se agrupan en el lado derecho (es decir hay más valores mayores que la media que menores). 
+\item \textbf{Kurtosis}: Indica la forma de la distribución o cómo se reparten los valores a lo largo de toda la distribución, con un valor cercano a 0 indica que sigue una distribución normal, mientras que si es mayor que 0 los valores se distrubuyen principalmente alrededor de la media y si es menor que 0 se distribuyen uniformemente.
+\end{itemize}
 
-\subsection{Subsection Heading Here}
-Write your subsection text here.
+Gracias al mínimo, máximo y percentiles nos podemos hacer una idea de como se distribuyen los datos y saber qué forma aproximada tiene la distrución si se representara gráficamente. Podemos conocer la simetría de la distribución o skewness (asimetría negativa o positva) en función de dónde se encuentre la mediana respecto al máximo y mínimo, y la forma de la distribución o kurtosis (platicúrtica, mesocúrtica o leptocúrtica) en función de la separación que haya entre los extremos y cada uno de los percentiles (teniendo en cuenta que la mediana es el percentil 50).
 
-\section{Conclusion}
-Write your conclusion here.
+Para cada una de las variables se han calculado las medidas descritas anteriomente y se muestran en las tablas siguientes:
+
+\input{tabla_de_analisis_descriptivo_1}
+\input{tabla_de_analisis_descriptivo_2}
+
+\section{Relación entre variables}
+
+\includegraphics[width=1.00\textwidth]{matriz_de_correlacion.pdf}
+
+\section{Análisis descriptivo de variables relevantes}
+
+\section{Modelo de regresión}
+
 
 \end{document}
