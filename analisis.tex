@@ -1,7 +1,7 @@
 \documentclass{article}
 \usepackage{graphicx}
 \usepackage[utf8]{inputenc}
-\usepackage{rotating} 
+\usepackage{placeins}
 \usepackage[spanish]{babel}
 
 \selectlanguage{spanish}
@@ -14,7 +14,7 @@
 \maketitle
 
 \begin{abstract}
-El propósito de este documento es realizar un análisis descriptivo sobre las variables del conjunto de datos dado, encontrar posibles relaciones entre las mismas y finalmente realizar uno o varios modelos que puedan predecir los valores de algunas variables. Todo esto con rigor matemático.
+El propósito de este documento es realizar un análisis descriptivo sobre las variables del conjunto de datos dado, encontrar posibles relaciones entre las mismas y finalmente realizar uno o varios modelos que puedan predecir los valores de algunas variables. Todo esto respaldado con rigor matemático.
 \end{abstract}
 \newpage
 
@@ -26,6 +26,7 @@ Los datos que se nos presentan para analizar tienen la siguiente estructura:
 
 \input{tabla_de_datos_de_ejemplo_1}
 \input{tabla_de_datos_de_ejemplo_2}
+\FloatBarrier
 
 En primera instancia se va a realizar un análisis descriptivo de los datos, por lo que todos aquellos que sean no sean cuantitavos, es decir, que sean cualitativos, serán eliminados.
 
@@ -34,8 +35,8 @@ En primera instancia se va a realizar un análisis descriptivo de los datos, por
 Para realizar el análisis descriptivo se han tenido en cuenta las siguientes medidas:
 \begin{itemize}
 \item \textbf{Media}: Es el valor que dado todo el conjunto de datos mejor aproxima a todos los valores del conjunto.
-\item \textbf{Varianza}: Representa cuánto se alejan de forma general todos los valores de la media del conjunto.
-\item \textbf{Desviación Típica}: Es la raíz cuadrada de la varianza.
+\item \textbf{Cuasi varianza}: Representa cuánto se alejan de forma general todos los valores de la media del conjunto. Es equivalente a la varianza, y su uso es aceptado para dar un cierto margen adicional al presentar rangos estadísticos.
+\item \textbf{Cuasi Desviación Típica}: Es la raíz cuadrada de la varianza. De la misma forma que la cuasi varianza es equivalente a la varianza, la cuasi desviación típica es equivalente al desviación típica.
 \item \textbf{CV}: Sirve para comparar dos conjuntos de datos de la misma variable, de forma que mientras más cercano a cero sea este valor, el conjunto de datos es menos disperso. 
 \item \textbf{Mínimo}: Es el valor más pequeño de la lista de valores.
 \item \textbf{Percentil-25}: Es el valor tal que el 25\% de los valores del conjunto de datos queda por debajo del mismo.
@@ -52,14 +53,173 @@ Para cada una de las variables se han calculado las medidas descritas anteriomen
 
 \input{tabla_de_analisis_descriptivo_1}
 \input{tabla_de_analisis_descriptivo_2}
+\FloatBarrier
+
+Entre los resultados obtenidos, resalta el CV de rentabieco, ya que el CV siempre suele moverse por valores cercanos a 1, sin embargo en este caso tenemos que es 17.53. Esto se debe a que la media es cercana a 0, y lo que nos indica este valor es cuantas veces es más grande la dispersión respecto a la media.
 
 \section{Relación entre variables}
 
+Uno de los objetivos es poder predecir una de las variables en función del resto, por lo que nos interesa saber el grado de relación que existe entre las diferentes variables. Para ello vamos a utilizar la covarianza:
+
+\[Cov(x,y)=\frac{1}{n}\sum_{i=1}^{n}(x_{i}y_{i}-\bar{x}\bar{y})\]
+
+Sin embargo, dado que la covarianza depende de las unidades de la variable, es díficil comparar entre diferentes variables y decidir cuáles tienen más relación entre sí. Para solucionar este problema podemos usar el coeficiente de correlación lineal, cuaya fórmula se indica a continuación:
+
+\[r_{xy}=\frac{Cov(x,y)}{\sqrt{V_{x}V_{y}}}\]
+
+Este coeficiente se mueve en el intervalo [-1,1]. Si el valor del mismo es cercano a 0, indica que no existe correlación entre las variables, y en caso de que sea cercano a los extremos indica que existe correlación. En caso de ser negativa indica que cuando uno aumenta el otro disminuye, mientras que si es positivo indica que cuando uno aumenta el otro también aumenta.
+
+Dada esta definición se genera la matriz de correlación, en la que en cada celda indica la correlación entre cada par de variables, siendo la diagonal de la matriz igual a 1, ya que la correlación entre una variable y ella misma es absoluta.
+
 \includegraphics[width=1.00\textwidth]{matriz_de_correlacion.pdf}
+\FloatBarrier
+
+Si nos fijamos en la matriz, nos llamara la atención la relación que existe entre VENTAS y EMPLEADOS y que es igual 0.89, por lo que al aumentar o disminuir una de ellas la otra aumentará o disminuirá de la misma forma, casi siguiendo una relación lineal. Lo que nos indica $r_{xy}$ en este caso es que el valor de una de las variables queda explicada en un 89\% por el valor de la otra.
 
 \section{Análisis descriptivo de variables relevantes}
 
-\section{Modelo de regresión}
+En esta sección vamos a continuar con el análisis de las dos variables que han resultado más relevantes, que como ya comentamos han sido VENTAS y NÚMERO DE EMPLEADOS.
 
+En primer lugar hagamos un análisis previo en función de los valores que ya hemos definido, de estas variables. Ambas distribuciones tienen un valor de skewness similar, y muy superior a 0, por lo que los datos en ambas variables tienen asimetría positiva, es decir, se acumularán en el lado izquierdo del eje de abscisas. Esto también lo podemos observar ya que la mediana en ambas distribuciones está bastante cercana al mínimo y muy alejada del máximo. Además podemos saber que la distribución es leptocúrtica, es decir, las medidas se acumulan en torno a la mediana, ya que la kurtosis en ambas variables es mayor que 0.
+
+La relación entre estos valores los podemos ver rápidamente usando los diagramas de cajas:
+
+\includegraphics[width=0.50\textwidth]{diagrama_de_cajas_de_numero_de_empleados.pdf}
+\includegraphics[width=0.50\textwidth]{diagrama_de_cajas_de_ventas.pdf}
+\FloatBarrier
+
+Y para verificar que las distribuciones tienen la forma que se ha descrito gracias a las medidas de análisis descriptivo, se han generado los histogramas:
+
+\includegraphics[width=0.50\textwidth]{histograma_de_numero_de_empleados.pdf}
+\includegraphics[width=0.50\textwidth]{histograma_de_ventas.pdf}
+\FloatBarrier
+
+Una vez que ya conocemos cómo son las distribuciones de estas variables, hay que verificar que efectivamente existe una relación entre ambas variables. Para ello se ha generado una matriz de dispersión, y aunque en este caso que sólo estamos analizando dos variables hubiera sido suficiente incluir únicamente una gráfica de dispersión, se ha optado por representar la matriz para familiazarnos con ella en futuros análisis. En la matriz podemos observar que al aumentar una de las variables la otra también aumenta, e incluso podemos dislumbrar una posible línea intermedia entre los puntos aglomerados.
+
+\includegraphics[width=0.80\textwidth]{matriz_de_dispersion.pdf}
+\FloatBarrier
+
+Para ver con más detalle cómo se relacionan éstas dos variables se muestra una matriz de contingencia, tomando para VENTAS como tamaño del intervalo $(max - min)/\sqrt{n}$ y para NUMERO DE EMPLEADOS la categorización: Microempresa (1-9 empleados),
+Pequeña empresa (10-49 empleados), Mediana empresa (50-249 empleados) y Gran empresa (250 y más empleados).
+
+No tenemos ningún dato sobre grandes empresas, y como ya hemos mostrado en el diagrama de dispersión, las micro empresas tienen unas ventas que se encuentran en los intervalos 1-8, mientras que las pequeñas entre los interval 1-23, y las medianas empresas tienen unas ventas que se concentran en los intervalos 18-35. Es decir, que mientras mayor sea la empresa, los intervalos en los que se concentran las ventas son mayores.
+
+\input{matriz_de_contingencia_ventas_empleados}
+\FloatBarrier
+
+\section{Modelo de regresión inicial}
+
+Como VENTAS y NÚMERO DE EMPLEADOS son las variables más relevantes, como ya hemos demostrado anteriormente, vamos a generar dos modelos para poder predecir cada variable en función de la otra.
+
+Dado la dispersión de los datos, parece que un modelo lineal es el más apropiado para representar las distribuciones. Por modelo lineal nos referimos a una recta que siga la fórmula $y = a*x + b$ donde $x$ es la variable de entrada e $y$ la que intentamos predecir.
+
+Sin embargo, hay que múltiples rectas que sigan esta fórmula, y la que buscamos es la que mejor comprenda los datos, es decir, la que cometa el mínimo error. Como función de error elegimos el error cuadrático medio, es decir, la suma de las distancia euclídeas entre los diferentes puntos y la recta. Puede demostrarse que los valores de la recta $y = a*x + b$ que minimiza el error cuadrático medio son:
+\[a = \frac{\sum(x_i – \bar{x}) (y_i – \bar{y})} {\sum(x_i – \bar{x})^2}\]
+\[b = \bar{y} – a \bar{x}\]
+
+Aplicando estas fórmulas obtenemos los siguientes modelos:
+
+\includegraphics[width=0.50\textwidth]{modelo_lineal_para_ventas.pdf}
+\includegraphics[width=0.50\textwidth]{modelo_lineal_para_numero_de_empleados.pdf}
+\FloatBarrier
+
+Como se demuestra gráficamente, la recta de regresión concuerda bastante bien con los datos, pero para demostrar la bondad del modelo se van a calcular una serie de estadísticos.
+
+\input{estadisticos_modelo_lineal_de_ventas_1}
+\input{estadisticos_modelo_lineal_de_numero_de_empleados_1}
+\FloatBarrier
+
+En primer lugar nos fijaremos en el $R^2$ ajustado, y dado que la fórmula es simétrica, obtenemos el mismo valor para ambos modelos. En este caso es de 0.79, lo que quiere decir que el modelo explica en un 79\% los valores de las variables, lo cual es un porcentaje bastante elevado.
+
+En segundo lugar, nos fijaremos en los p-valores de los componentes de las ecuaciones. En la fórmula de la recta el intercepto lo hemos representado con $b$ y la variable de entrada $a$. El p-valor indica qué probabilidad hay de que exista un escenario en el la variable no tenga relevancia en la ecuación de la recta, dado que los datos siguen una distribución normal. En todos los casos el p-valor es muy cercano a 0, es decir, la probabilidad de que sean encontrar estos escenarios es prácticamente nula, por lo tanto estas variables deben ser muy representativas para el modelo.
+
+Dado que ya hemos demostrado los modelos son buenos, es hora de hablar de los residuos, es decir del error del modelo respecto a los datos usados, para ello mostramos la gráfica de los residuos.
+
+\includegraphics[width=0.50\textwidth]{residuos_de_modelo_lineal_para_ventas.pdf}
+\includegraphics[width=0.50\textwidth]{residuos_de_modelo_lineal_para_numero_de_empleados.pdf}
+\FloatBarrier
+
+En primer lugar, debemos de hablar de la homocedasticidad o heterocedasticidad de los residucos, es decir, si el error se distribuye homogéneamente o heterogéneamente a lo largo de los posibles valores de la variable dependiente.
+
+A partir de la gráfica podríamos pensar que los residuos son heterocedásticos, ya que hay una tendencia clara de que cuando aumenta el valor de la variable dependiente, aumenta el error cometido. Sin embargo hay muchos datos que conforme aumenta el valor de la variable, se acercan más a cero. También da la impresión de que que es heterocedástico ya que la mayoría de los datos se concentran al principio.
+
+La cuestión es que el intervalo en el que se mueven los residuos es constante para todos los datos, independientemente del valor, es decir, que la varianza es constante, por lo tanto podemos concluir que es homocedástico. Se podrían trazar dos líneas paralelas por encima y por debajo de las valores que contuvieran todos los valores de los residuos.
+
+También podemos concluir que los residuos no siguen una distribución normal, para ello usamos el p-valor del test de shapiro. Este test toma como hipótesis inicial que la distribución de los residuos sigue una distribución normal, debido a que el p-valor de ambos modelos es cercano a cero, podemos rechazar la hipótesis inicial, y por lo tanto aceptar la hipótesis alternativa, en este caso que no sigue una distribución normal.
+
+De forma similar al test de shapiro, podemos interpretar el test de durbin-watson para ver si existe independencia de los residuos. Este test toma como hipótesis inicial que los residuos no está correlados frente a la alternativad de que sí lo están. Debido a que el p-valor es mayor que 0.05 (valor que tomamos por defecto para validar los contraste de hipótesis) en el caso del modelo para número de empleados, por lo que no estamos obligados a rechazar la hipótesis inicial, pero no obliga que sea cierta, por lo que podría ser que los residuos no fueran independientes. En caso del modelo de ventas, el p-valor es menor que 0.05, por lo que rechazamos la hipótesis inicial, y debemos aceptar que los residuos son independientes.
+
+\section{Análisis de subconjuntos de datos}
+
+\subsection{Análisis descriptivo}
+
+Se nos pide que analicemos los datos de las provincias de Madrid y Barcelona al igual que en la sección anterior.
+
+\input{tabla_de_analisis_descriptivo_de_madrid_1}
+\input{tabla_de_analisis_descriptivo_de_barcelona_1}
+\input{tabla_de_analisis_descriptivo_de_madrid_2}
+\input{tabla_de_analisis_descriptivo_de_barcelona_2}
+\FloatBarrier
+
+En este caso podemso comparar ambos subconjuntos de datos usando la media y el CV. Si nos fijamos en los variables importantes que hemos analizado en apartados anteriores, tanto VENTAS como NÚMERO DE EMPLEADOS tienen una media y CV similar, por lo que podríamos intuir que la distribución de sendos conjuntos de datos se va a comportar de forma similar.
+
+Además, de forma similar al caso general, todas las variables tienen skewness muy superior a 0, por lo que los datos tienen asimetría positiva, es decir, se acumularán en el lado izquierdo del eje de abscisas. Y son distribuciones leptocúrticas porque la kurtosis es mayor que 0.
+
+Por otro lado creamos la matriz de correlación, y además de aparecer correladas ventas y número de empleados, también aparece la variable coe.
+
+\includegraphics[width=0.50\textwidth]{matriz_de_correlacion_de_madrid.pdf}
+\includegraphics[width=0.50\textwidth]{matriz_de_correlacion_de_barcelona.pdf}
+\FloatBarrier
+
+Sobre coe añadir se debe añadir que trabaja en un intervalo muy inferior al resto de las variables, por lo que habría que hacer algún tipo de tranformación para adecuar el valor de dicha variable acorde al resto de variables. Sin embargo, debido a que no es una variable relevante, se ha descartado esta opción. El motivo por el que aparece como variable relevante es que aun siendo muy pequeña sigue una distribución muy parecida a ventas y número de empleados y hay correlación entre las mismas, teniendo al igual que estas variables asimetría positiva y es leptocúrtica.
+
+\includegraphics[width=0.50\textwidth]{diagrama_de_cajas_de_numero_de_empleados_por_provincia.pdf}
+\includegraphics[width=0.50\textwidth]{diagrama_de_cajas_de_ventas_por_provincia.pdf}
+\FloatBarrier
+\begin{center}
+\includegraphics[width=0.50\textwidth]{diagrama_de_cajas_de_coe_por_provincia.pdf}
+\FloatBarrier
+\end{center}
+
+Los diagramas de cajas nos demuestran gráficamente que nuestro análisis previo era acertado.
+
+\subsection{Verificación comportamiento entre provincias}
+
+Se nos pide verificar si el comportamiento de los datos de ventas es diferente entre las provincias de Madrid y Barcelona. Para ello vamos a aplicar el contraste de hipótesis, tomando como hipótesis nula que la varianza de las distribuciones es igual, y como hipótesis alternativa que la varianza es diferente.
+
+Para verificar esta hipótesis se usa el estadístico siguiente suponiendo que las distribuciones son normales:
+
+\[H_0:\sigma{}_1 = \sigma{}_2; R=\{s^2_1/s^2_2\not\in[F_{n_1-1;n_2-1;1-\alpha/2}, F_{n_1-1;n_2-1;\alpha/2}]\}\]
+
+Comprobemos en primera instancia que las distribuciones son normales, para ello utilizamos el test de shapiro. Para ambas distribuciones obtenemos que el valor es cercano a 0, por lo que podemos rechazar la hipótesis nula de que las distribuciones son normales y debemos aceptar que los conjuntos de datos de Madrid y Barcelona no siguen una distribución normal.
+
+A pesar de que no se cumple que las poblaciones sigan una distribución normal, vamos a calcular el estadístico. Dado que queremos verificar si la varianza es igual, entonces $s^2_1/s^2_2=1$. Podemos calcular el estadístico, dado que $n_1=472$, $n_2=545$ y $\alpha = 0.05$, y buscando en la tabla de F de snedecor, y obtenemos:
+
+\[H_0:\sigma{}_1 = \sigma{}_2; R=\{1\not\in[F_{471;544;0.975}, F_{471;544;0.025}]\}=\{1\not\in[1.319718,1.334526]\}\]
+
+Como se cumple que 1 no se encuentra en el intervalo, nos encontramos en la región de rechazo, por lo que nos vemos en la obligación de rechazar la hipótesis inicial, y aceptar que la hipótesis alternativa, que en este caso consiste que la varianza de Madrid y la varianza de Barcelona son diferentes con una confianza del 95\%.
+
+\subsection{Modelos de regresión}
+
+Se nos has solicitado hacer un estudio de si existe una relación lineal entre VENTAS y PRODUCTIVIDAD. Como primera aproximación podemos intuir que no existe relación entre ambas porque la correlación es casi 0. A continuación demostraremos si esta primera intuición es correcta.
+
+\includegraphics[width=0.50\textwidth]{modelo_lineal_de_ventas_para_madrid.pdf}
+\includegraphics[width=0.50\textwidth]{modelo_lineal_de_ventas_para_barcelona.pdf}
+\FloatBarrier
+
+\includegraphics[width=0.50\textwidth]{residuos_de_modelo_lineal_de_ventas_para_madrid.pdf}
+\includegraphics[width=0.50\textwidth]{residuos_de_modelo_lineal_de_ventas_para_barcelona.pdf}
+\FloatBarrier
+
+\input{estadisticos_modelo_lineal_por_provincia_de_ventas_1}
+\FloatBarrier
+
+Siguiendo la metodología de los apartados anteriores, se ha contruido un modelo de regresión lineal, el cual vemos que no se adapta en absoluto con los datos provistos. El $R^2$ es prácticamente 0, por lo que la variable productividad no explica en absoluto el comportamiento de la variable ventas.
+
+Lo p-valores de los componentes de la ecuación también son cercanos a 0, por lo que implica que no existen otros valores para uno modelo lineal que se aproximen mejor a los datos provistos, y ya hemos visto que la ecuación no sirve para relacionar estos valores, por lo que podemos concluir que no existe una relación lineal que enlace estas dos variables.
+
+Aunque el modelo no sea útil, cabe comentar que los residuos son homocedásticos y que existe una clara relación entre el valor del residuo y el valor de entrada, es prácticamente una línea recta. Esto nos lo confirma el p-valor del test de Durbin-Watson que es muy cercano a 0, por lo que podemos rechazar la hipótesis nula de que existe independencia entre los datos y debemos aceptar la alternativa que es que no existe.
+
+Si quisiéramos buscar un modelo para estas variables, deberíamos usar otro tipo de modelo, como uno exponencial para que se adapte mejor a la curva que se produce cercano al origen.
 
 \end{document}
